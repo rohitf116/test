@@ -1,0 +1,86 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Random Questions</title>
+  </head>
+  <body>
+    <h1>Random Question:</h1>
+    <div id="question"></div>
+    <div id="options"></div>
+    <button id="nextButton">Next</button>
+    <button id="saveButton">Save</button>
+    <button id="previewButton">Preview</button>
+    <button id="resetButton">Reset</button>
+
+    <script>
+      const questionContainer = document.getElementById("question");
+      const optionsContainer = document.getElementById("options");
+      const nextButton = document.getElementById("nextButton");
+      const saveButton = document.getElementById("saveButton");
+      const previewButton = document.getElementById("previewButton");
+      const resetButton = document.getElementById("resetButton");
+
+      let currentQuestion = null;
+      const savedAnswers = [];
+
+      // Function to fetch and display the next question
+      const fetchNextQuestion = async () => {
+        try {
+          const response = await fetch("/api/questions");
+          if (!response.ok) {
+            throw new Error("Error fetching question");
+          }
+          const question = await response.json();
+          currentQuestion = question;
+          questionContainer.textContent = question.question;
+
+          // Display options
+          optionsContainer.innerHTML = "";
+          question.options.forEach((option, index) => {
+            const optionElement = document.createElement("div");
+            optionElement.textContent = `${index + 1}. ${option}`;
+            optionsContainer.appendChild(optionElement);
+          });
+        } catch (error) {
+          console.error("Error fetching question:", error);
+        }
+      };
+
+      // Event listener for the "Next" button
+      nextButton.addEventListener("click", fetchNextQuestion);
+
+      // Function to save the current answer
+      const saveAnswer = () => {
+        if (currentQuestion) {
+          savedAnswers.push(currentQuestion.correctAnswer);
+        }
+      };
+
+      // Event listener for the "Save" button
+      saveButton.addEventListener("click", saveAnswer);
+
+      // Function to preview saved answers
+      const previewAnswers = () => {
+        alert(`Saved Answers: ${savedAnswers.join(", ")}`);
+      };
+
+      // Event listener for the "Preview" button
+      previewButton.addEventListener("click", previewAnswers);
+
+      // Function to reset saved answers
+      const resetAnswers = () => {
+        savedAnswers.length = 0;
+        alert("Answers reset.");
+      };
+
+      // Event listener for the "Reset" button
+      resetButton.addEventListener("click", resetAnswers);
+
+      // Initial question fetch
+      fetchNextQuestion();
+    </script>
+  </body>
+</html>
