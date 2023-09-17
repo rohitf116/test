@@ -1,6 +1,7 @@
 import examModel from "../models/examModel.js";
 import roomModel from "../models/roomModel.js";
 import userModel from "../models/userModel.js";
+import { isValid, isValidObjectId } from "../utils/regex.js";
 
 // create Room
 
@@ -9,6 +10,12 @@ export const createRoom = async (req, res) => {
     const userId = req.user;
     const { roomName } = req.body;
 
+    if (!isValid(roomName)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Please Enter roomName" });
+    }
+
     const findRoom = await roomModel.findOne({ roomName });
     if (findRoom) {
       return res
@@ -16,7 +23,7 @@ export const createRoom = async (req, res) => {
         .json({ success: false, message: "Room name already exists" });
     }
 
-    if (findRoom.user.includes(userId)) {
+    if (findRoom && findRoom.user.includes(userId)) {
       return res.status(400).json({
         success: false,
         message: "You are already in this room",
@@ -82,8 +89,11 @@ export const joinRoom = async (req, res) => {
   try {
     const userId = req.user;
     const roomId = req.params.roomId;
-
-    console.log(userId, roomId);
+    if (!isValidObjectId(roomId)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid roomId" });
+    }
 
     const findRoom = await roomModel.findById(roomId);
     if (!findRoom) {
@@ -133,6 +143,12 @@ export const joinRoom = async (req, res) => {
 export const exitRoom = async (req, res) => {
   try {
     const roomId = req.params.roomId;
+
+    if (!isValidObjectId(roomId)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid roomId" });
+    }
 
     const findRoom = await roomModel.findByIdAndDelete(roomId);
     if (!findRoom) {

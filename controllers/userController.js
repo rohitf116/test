@@ -2,12 +2,33 @@ import userModel from "../models/userModel.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import { isValid } from "../utils/regex.js";
 dotenv.config();
 const { HASHTOKEN } = process.env;
+
+// Register and loin
 
 export const registerAndLoginUser = async (req, res) => {
   try {
     const { userName, password } = req.body;
+    if (!Object.keys(req.body).length) {
+      return res.status(400).json({
+        success: false,
+        message: "User name and password is required",
+      });
+    }
+
+    if (!isValid(userName)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Please Enter userName" });
+    }
+
+    if (!isValid(password)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Please Enter password" });
+    }
 
     const existingUser = await userModel
       .findOne({ userName })

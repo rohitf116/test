@@ -1,15 +1,40 @@
-// import examModel from "../models/examModel.js";
-import userModel from "../models/userModel.js";
 import roomModel from "../models/roomModel.js";
 import questionModel from "../models/questionModel.js";
+import { isValid, isValidObjectId } from "../utils/regex.js";
+
+// Answer questions
 
 export const answerQuestion = async (req, res) => {
   try {
     const userId = req.user;
     const { roomId, questionId, selectedOption } = req.body;
+    if (!Object.keys(req.body).length) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required",
+      });
+    }
+
+    if (!isValid(selectedOption)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Please select option" });
+    }
+
+    if (!isValidObjectId(questionId)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid questionId" });
+    }
+
+    if (!isValidObjectId(roomId)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid roomId" });
+    }
 
     // Find the room by roomName
-    const room = await roomModel.findOne({ roomId });
+    const room = await roomModel.findById(roomId);
 
     if (!room) {
       return res.status(404).json({
@@ -78,10 +103,18 @@ export const answerQuestion = async (req, res) => {
   }
 };
 
+// Get result
+
 export const getUserReport = async (req, res) => {
   try {
     const userId = req.user;
     const roomId = req.params.roomId;
+
+    if (!isValidObjectId(roomId)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid roomId" });
+    }
 
     const room = await roomModel.findById(roomId);
 

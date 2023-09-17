@@ -1,7 +1,8 @@
 import questionModel from "../models/questionModel.js";
 import examModel from "../models/examModel.js";
 import userModel from "../models/userModel.js";
-// create Room
+
+// create Questions
 
 export const createQuestions = async (req, res) => {
   try {
@@ -19,6 +20,8 @@ export const createQuestions = async (req, res) => {
       .json({ success: false, message: "server error", error: error.message });
   }
 };
+
+// Get 5 rendom questions array
 
 export const getQuestions = async (req, res) => {
   try {
@@ -52,10 +55,7 @@ export const getQuestions = async (req, res) => {
     return res.status(201).json({
       success: true,
       message: "A new Exam has been created",
-      data: {
-        roomId: roomId,
-        questions: randomQuestions,
-      },
+      data: exam,
     });
   } catch (error) {
     console.error(error);
@@ -67,10 +67,19 @@ export const getQuestions = async (req, res) => {
   }
 };
 
+// get single question
+
 export const getSingleQuestion = async (req, res) => {
   try {
     const examId = req.query.examId;
     const questionIndex = parseInt(req.query.questionIndex);
+
+    if (!isValidObjectId(examId)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid examId" });
+    }
+
     const exam = await examModel.findById(examId);
 
     if (!exam) {
