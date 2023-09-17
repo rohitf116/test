@@ -2,10 +2,20 @@ import express from "express";
 import dotenv from "dotenv";
 import app from "./app.js";
 import mongoose from "mongoose";
+import http from "http";
+const server = http.createServer(app);
 import { Server } from "socket.io";
-
+const io = new Server(server);
 // dotEnv config {to access the variables}
 dotenv.config();
+
+io.on("connection", (socket) => {
+  console.log("a user is connected", socket.id);
+
+  socket.on("disconnect", () => {
+    console.log("a user is disconnected");
+  });
+});
 
 // env variables
 const { DATABASE_URL } = process.env;
@@ -15,13 +25,9 @@ app.use(express.json());
 
 mongoose
   .connect(DATABASE_URL, { useNewUrlParser: true })
-
   .then(() => console.log("MongoDb is connected..."))
   .catch((err) => console.log(err));
 
-const server = app.listen(PORT || 3000, function () {
+server.listen(PORT || 3000, function () {
   console.log("Express app running on port " + (process.env.PORT || 3000));
 });
-
-// Set up Socket.io using the Server class
-const io = new Server(server); // Use the Server class to initialize Socket.io
