@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 dotenv.config();
 const { HASHTOKEN } = process.env;
 
-export const registerOrLoginUser = async (req, res) => {
+export const registerAndLoginUser = async (req, res) => {
   try {
     const { userName, password } = req.body;
 

@@ -2,12 +2,13 @@ import express from "express";
 import trimRequest from "trim-request";
 import {
   answerQuestion,
-  generateUserReport,
+  getUserReport,
 } from "../controllers/examController.js";
+import { isAuthenticated } from "../middlewares/isAuth.js";
 
 const router = express.Router();
 
-router.route("/").post(trimRequest.all, answerQuestion);
-router.route("/report").post(generateUserReport);
+router.route("/").post(isAuthenticated, trimRequest.all, answerQuestion);
+router.route("/report/:roomId").get(isAuthenticated, getUserReport);
 
 export default router;

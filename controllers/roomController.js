@@ -74,7 +74,7 @@ export const lobby = async (req, res) => {
 export const joinRoom = async (req, res) => {
   try {
     const userId = req.user;
-    const roomId = req.params;
+    const roomId = req.params.roomId;
 
     console.log(userId, roomId);
 
@@ -84,6 +84,14 @@ export const joinRoom = async (req, res) => {
         .status(404)
         .json({ success: false, message: " Room not found" });
     }
+
+    if (findRoom.user.includes(userId)) {
+      return res.status(400).json({
+        success: false,
+        message: "You are already in this room",
+      });
+    }
+
     if (findRoom.user.length >= 2) {
       return res
         .status(400)

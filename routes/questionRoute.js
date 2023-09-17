@@ -5,11 +5,13 @@ import {
   getQuestions,
   getSingleQuestion,
 } from "../controllers/questionController.js";
+import { isAuthenticated } from "../middlewares/isAuth.js";
 
 const router = express.Router();
 
 router.route("/").post(trimRequest.all, createQuestions);
-router.route("/:roomId").get(getQuestions);
-router.route("/").get(getSingleQuestion);
+
+router.route("/:roomId").get(isAuthenticated, getQuestions);
+router.route("/").get(isAuthenticated, getSingleQuestion);
 
 export default router;

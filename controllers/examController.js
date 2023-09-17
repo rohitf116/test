@@ -92,10 +92,11 @@ import questionModel from "../models/questionModel.js";
 
 export const answerQuestion = async (req, res) => {
   try {
-    const { roomName, userName, questionId, selectedOption } = req.body;
+    const userId = req.user;
+    const { roomId, questionId, selectedOption } = req.body;
 
     // Find the room by roomName
-    const room = await roomModel.findOne({ roomName });
+    const room = await roomModel.findOne({ roomId });
 
     if (!room) {
       return res.status(404).json({
@@ -105,7 +106,7 @@ export const answerQuestion = async (req, res) => {
     }
 
     // Check if the user is part of the room
-    if (!room.user.includes(userName)) {
+    if (!room.user.includes(userId)) {
       return res.status(403).json({
         success: false,
         message: "User is not part of the room.",
@@ -113,12 +114,12 @@ export const answerQuestion = async (req, res) => {
     }
 
     // Find the user's metadata entry or create a new one if it doesn't exist
-    let userMetadata = room.metadata.find((entry) => entry.user === userName);
+    let userMetadata = room.metadata.find((entry) => entry.user === userId);
 
     if (!userMetadata) {
       // Create a new metadata entry for the user
       userMetadata = {
-        user: userName,
+        user: userId,
         responses: [],
       };
       room.metadata.push(userMetadata);
@@ -171,12 +172,13 @@ export const answerQuestion = async (req, res) => {
   }
 };
 
-export const generateUserReport = async (req, res) => {
+export const getUserReport = async (req, res) => {
   try {
-    const { userName, roomName } = req.body;
+    const userId = req.user;
+    const roomId = req.params.roomId;
 
     // Find the room by roomName
-    const room = await roomModel.findOne({ roomName });
+    const room = await roomModel.findOne({ roomId });
 
     if (!room) {
       return res.status(404).json({
@@ -186,7 +188,7 @@ export const generateUserReport = async (req, res) => {
     }
 
     // Check if the user is part of the room
-    if (!room.user.includes(userName)) {
+    if (!room.user.includes(roomId)) {
       return res.status(403).json({
         success: false,
         message: "Unauthorized, User is not part of the room.",
@@ -234,7 +236,7 @@ export const generateUserReport = async (req, res) => {
 
       // Update the user's score in the metadata
       userMetadata.score = score;
-      userScores.push({ userName, score });
+      userScores.push({ roomId, score });
     }
 
     // Save the updated room document
@@ -245,18 +247,6 @@ export const generateUserReport = async (req, res) => {
       success: true,
       userScores: userScores,
     });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({
-      success: false,
-      message: "Server Error",
-      error: error.message,
-    });
-  }
-};
-
-export const exitRoom = async (req, res) => {
-  try {
   } catch (error) {
     console.error(error);
     return res.status(500).json({

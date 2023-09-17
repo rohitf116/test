@@ -1,10 +1,9 @@
 import express from "express";
 import trimRequest from "trim-request";
-import { registerOrLoginUser } from "../controllers/userController.js";
+import { registerAndLoginUser } from "../controllers/userController.js";
 
 const router = express.Router();
 
-router.route("/").post(trimRequest.all, registerOrLoginUser);
-// router.route("/login").post(trimRequest.all, userLogin);
+router.route("/").post(trimRequest.all, registerAndLoginUser);
 
 export default router;
