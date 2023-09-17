@@ -1,0 +1,25 @@
+{
+  "name": "quizapp-backend",
+  "version": "1.0.0",
+  "description": "Real Time Quiz",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon src/index.js"
+  },
+  "author": "Sunil Tiwari",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cookie-parser": "^1.4.6",
+    "express": "^4.18.2",
+    "express-jwt": "^8.4.1",
+    "express-mongo-sanitize": "^2.2.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^7.5.1",
+    "nodemon": "^3.0.1",
+    "socket.io": "^4.7.2",
+    "trim-request": "^1.0.6"
+  }
+}
