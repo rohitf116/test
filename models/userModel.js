@@ -13,8 +13,15 @@ const userSchema = new Schema(
       type: String,
       required: true,
     },
-    joinedRoom: [],
+    joinedRoom: {
+      type: Schema.Types.ObjectId,
+      ref: "Room",
+    },
 
+    isReady: {
+      type: Boolean,
+      default: false,
+    },
     metadata: [
       {
         type: Object,

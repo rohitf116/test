@@ -16,6 +16,13 @@ export const createRoom = async (req, res) => {
         .json({ success: false, message: "Room name already exists" });
     }
 
+    if (findRoom.user.includes(userId)) {
+      return res.status(400).json({
+        success: false,
+        message: "You are already in this room",
+      });
+    }
+
     // Create a new room document
     const newRoom = new roomModel({ roomName });
     newRoom.user.push(userId);
