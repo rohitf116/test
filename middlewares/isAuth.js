@@ -9,7 +9,15 @@ export const isAuthenticated = async (req, res, next) => {
     if (!token) {
       return res.status(400).send({ status: false, msg: "Token not present" });
     }
-    let decodedToken = jwt.verify(token, HASHTOKEN);
+    let decodedToken = jwt.verify(token, HASHTOKEN, (error, response) => {
+      if (error) {
+        return res
+          .status(401)
+          .json({ status: false, message: "Invalid tokens" });
+      }
+      req.user = response;
+      next();
+    });
     if (!decodedToken) {
       return res
         .status(401)
